@@ -160,14 +160,14 @@ def search_inventory(page, stock_number):
 
 def open_matching_unit(page, stock_number):
     page.wait_for_timeout(2500)
-
+    
     stock_texts = [
         f"Stock #: {stock_number}",
         f"Stock#:{stock_number}",
         f"Stock #:{stock_number}",
         str(stock_number),
     ]
-
+    
     stock_locator = None
     for txt in stock_texts:
         try:
@@ -177,13 +177,13 @@ def open_matching_unit(page, stock_number):
                 break
         except Exception:
             pass
-
+    
     if stock_locator is None:
         raise Exception(f"Could not find result row for stock number {stock_number}.")
-
+    
     stock_locator.scroll_into_view_if_needed()
     page.wait_for_timeout(1000)
-
+    
     containers = [
         "xpath=ancestor::tr[1]",
         "xpath=ancestor::div[contains(@class,'row')][1]",
@@ -193,54 +193,30 @@ def open_matching_unit(page, stock_number):
         "xpath=ancestor::li[1]",
         "xpath=ancestor::div[1]",
     ]
-
+    
     for container_xpath in containers:
         try:
             container = stock_locator.locator(container_xpath)
-
+            
             if container.count() == 0:
                 continue
-
+            
             links = container.locator("a")
-
+            
             for i in range(links.count()):
                 try:
                     link = links.nth(i)
-
+                    
                     if not link.is_visible() or not link.is_enabled():
                         continue
-
+                    
                     text = (link.inner_text() or "").strip()
                     href = (link.get_attribute("href") or "").strip().lower()
-
+                    
                     if not text:
                         continue
-                    if "stock" in text.lower():
-                        continue
-                    if "search" in text.lower():
-                        continue
-                    if "inventory" in text.lower():
-                        continue
-                    if "support" in text.lower():
-                        continue
-                    if "javascript:void" in href:
-                        continue
-                    if href == "#" or href.endswith("#"):
-                        continue
-
-                    print(f"Clicking vehicle link: {text}")
-                    link.scroll_into_view_if_needed()
-                    page.wait_for_timeout(500)
-                    link.click(timeout=5000)
-                    page.wait_for_timeout(3000)
-                    return
-
-                except Exception:
-                    pass
-        except Exception:
-            pass
-
-    raise Exception(f"Found stock {stock_number}, but could not click the blue make/model link.")
+                    
+
 
 
 def maybe_click_details_tab(page):
