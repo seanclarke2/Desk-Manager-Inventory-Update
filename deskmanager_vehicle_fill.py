@@ -216,7 +216,17 @@ def open_matching_unit(page, stock_number):
                     if not text:
                         continue
                     
-
+                    # Click the link to open the vehicle details
+                    link.click(timeout=3000)
+                    page.wait_for_timeout(3000)
+                    return
+                    
+                except Exception:
+                    continue
+        except Exception:
+            continue
+    
+    raise Exception(f"Could not find clickable link for stock number {stock_number}.")
 
 
 def maybe_click_details_tab(page):
